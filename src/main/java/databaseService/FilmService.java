@@ -2,37 +2,25 @@ package databaseService;
 
 import entity.*;
 import dao.FilmDao;
-import dao.impl.FilmDaoImpl;
 import inputInformation.*;
 
 import java.util.*;
 
 public class FilmService {
-    private final FilmDao filmDao = new FilmDaoImpl();
+    private final FilmDao filmDao = new FilmDao();
     private final FilmInput filmInput = new FilmInput();
     private final GenreInput genreInput = new GenreInput();
     private final ActorInput actorInput = new ActorInput();
+    private final YearsInput yearsInput = new YearsInput();
     private final DirectorInput directorInput = new DirectorInput();
     private static final Scanner scanner = new Scanner(System.in);
-
-    public List<Film> findAllFilms() {
-        return filmDao.findAll();
-    }
-
-    public Optional<Film> findFilmById(Integer id) {
-        return filmDao.findById(id);
-    }
-
-    public Optional<Film> findFilmByName(String name) {
-        return filmDao.findByName(name);
-    }
 
     public void searchFilms() {
         while (true) {
             System.out.println("Выберите тип поиска:");
             System.out.println("1. Получить все фильмы");
             System.out.println("2. По названию");
-            System.out.println("3. По году выхода");
+            System.out.println("3. По годам");
             System.out.println("4. По режиссёру");
             System.out.println("5. По актёру");
             System.out.println("6. Топ 10-фильмов по рейтингу");
@@ -48,8 +36,8 @@ public class FilmService {
 
             response = switch (command) {
                 case "1" -> filmDao.findAll();
-                case "2" -> filmDao.findByName(filmInput.filmNameInput()).stream().toList();
-                case "3" -> filmDao.findFilmsByYear(filmInput.yearInput());
+                case "2" -> filmDao.findByName(filmInput.filmNameInput());
+                case "3" -> filmDao.findFilmsByYear(yearsInput.yearsBetweenInput());
                 case "4" -> filmDao.findFilmsByDirector(directorInput.input());
                 case "5" -> filmDao.findFilmsByActor(actorInput.input());
                 case "6" -> filmDao.findTop10Films();
@@ -75,7 +63,9 @@ public class FilmService {
                         break;
                 }
             } else {
-                System.out.println(response);
+                for (Film film : response) {
+                    System.out.println(film);
+                }
             }
         }
     }
@@ -83,6 +73,8 @@ public class FilmService {
     public void addFilm() {
         String name = filmInput.filmNameInput();
         int year = filmInput.yearInput();
+        double rating = filmInput.ratingInput();
+        int stock = filmInput.stockInput();
 
         Set<Genre> genres = genreInput.addGenreToMovie();
 
@@ -90,10 +82,7 @@ public class FilmService {
 
         Set<Actor> actors = actorInput.addActorToMovie();
 
-        double rating = filmInput.ratingInput();
-        int stock = filmInput.stockInput();
-
-        filmDao.add(new Film(null, name, year, genres, directors, actors, rating, stock));
+        filmDao.add(new Film(null, name, year, rating, stock, genres, directors, actors));
         System.out.println("Фильм " + name + " добавлен в картотеку!");
     }
 
@@ -110,10 +99,9 @@ public class FilmService {
                 return;
             }
 
-            Optional<Film> film = selector(select);
+            Film filmToUpdate = selector(select);
 
-            if (film.isPresent()) {
-                Film filmToUpdate = film.get();
+            if (filmToUpdate != null) {
                 System.out.println("Найден фильм " + filmToUpdate.getName());
                 while (true) {
                     System.out.println("Что вы желаете изменить?");
@@ -125,7 +113,8 @@ public class FilmService {
                     System.out.println("6. Рейтинг");
                     System.out.println("7. Количество на складе");
                     System.out.println("8. Вывести информацию о фильме");
-                    System.out.println("0. Сохранить");
+                    System.out.println("9. Сохранить");
+                    System.out.println("0. Отмена");
 
                     String command = scanner.nextLine();
 
@@ -154,9 +143,11 @@ public class FilmService {
                         case "8":
                             System.out.println(filmToUpdate);
                             break;
-                        case "0":
+                        case "9":
                             filmDao.update(filmToUpdate);
-                            System.out.println("Информация о фильме " + film.get().getName() + " обновлена!");
+                            System.out.println("Информация о фильме " + filmToUpdate.getName() + " обновлена!");
+                            return;
+                        case "0":
                             return;
                     }
                 }
@@ -177,39 +168,42 @@ public class FilmService {
                 return;
             }
 
-            Optional<Film> film = selector(select);
+            Film film = selector(select);
 
-            if (film.isPresent()) {
-                filmDao.delete(film.get());
-                System.out.println("Фильм " + film.get().getName() + " удалён из картотеки!");
+            if (film != null) {
+                filmDao.delete(film);
+                System.out.println("Фильм " + film.getName() + " удалён из картотеки!");
                 break;
             }
         }
     }
 
-    public Optional<Film> selector(String command) {
+    public Film selector(String command) {
         switch (command) {
             case "1" -> {
                 String filmName = filmInput.filmNameInput();
-                Optional<Film> filmToDelete = filmDao.findByName(filmName);
+                List<Film> filmToDelete = filmDao.findByName(filmName);
 
                 if (filmToDelete.isEmpty()) {
                     System.out.println("Фильм с данным названием не найден!");
+                    return null;
                 }
-                return filmToDelete;
+
+                return filmToDelete.get(0);
             }
             case "2" -> {
                 Integer filmId = filmInput.idInput();
-                Optional<Film> filmToDelete = filmDao.findById(filmId);
+                Film filmToDelete = filmDao.findById(filmId);
 
-                if (filmToDelete.isEmpty()) {
+                if (filmToDelete == null) {
                     System.out.println("Фильм с данным id не найден!");
+                    return null;
                 }
                 return filmToDelete;
             }
             default -> {
                 System.out.println("Неизвестная команда.");
-                return Optional.empty();
+                return null;
             }
         }
     }

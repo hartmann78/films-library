@@ -1,16 +1,15 @@
 package inputInformation;
 
-import databaseService.ActorService;
+import dao.ActorDao;
 import entity.Actor;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 
 public class ActorInput {
     private final Scanner scanner = new Scanner(System.in);
-    private final ActorService actorService = new ActorService();
+    private final ActorDao actorDao = new ActorDao();
 
     public String input() {
         int limit = 64;
@@ -50,13 +49,13 @@ public class ActorInput {
                     throw new Exception();
                 }
 
-                Optional<Actor> actor = actorService.findActorByName(actorName);
+                Actor actor = actorDao.findByName(actorName);
 
-                if (actor.isPresent()) {
-                    actors.add(actor.get());
+                if (actor != null) {
+                    actors.add(actor);
                 } else {
                     Actor newActor = new Actor(null, actorName, new HashSet<>());
-                    actorService.addActor(newActor);
+                    actorDao.add(newActor);
                     actors.add(newActor);
                 }
             } catch (Exception e) {

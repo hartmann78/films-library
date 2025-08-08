@@ -19,10 +19,7 @@ public class Director {
 
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "films_directors",
-            joinColumns = @JoinColumn(name = "director_id"),
-            inverseJoinColumns = @JoinColumn(name = "film_id"))
+    @ManyToMany(mappedBy = "directors")
     private Set<Film> directorInFilms = new HashSet<>();
 
     @Override

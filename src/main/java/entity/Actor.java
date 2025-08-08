@@ -19,10 +19,7 @@ public class Actor {
 
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "films_actors",
-            joinColumns = @JoinColumn(name = "actor_id"),
-            inverseJoinColumns = @JoinColumn(name = "film_id"))
+    @ManyToMany(mappedBy = "actors")
     private Set<Film> actorInFilms = new HashSet<>();
 
     @Override

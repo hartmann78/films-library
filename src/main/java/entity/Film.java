@@ -12,14 +12,15 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "films")
+@NamedQuery(name = "Film.getFilteredByYear", query = "from Film f where f.year between :start and :end")
 public class Film {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String name;
-
     private Integer year;
+    private Double rating;
+    private Integer stock;
 
     @ManyToMany
     @JoinTable(name = "films_genres",
@@ -39,13 +40,9 @@ public class Film {
             inverseJoinColumns = @JoinColumn(name = "actor_id"))
     private Set<Actor> actors = new HashSet<>();
 
-    private Double rating;
-
-    private Integer stock;
-
     @Override
     public String toString() {
-        return "\nФильм: " + id +
+        return "Фильм: " + id +
                 ". Название: " + name +
                 ". Год выхода: " + year +
                 ". Жанр: " + genres +

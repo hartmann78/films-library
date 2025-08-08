@@ -17,7 +17,7 @@ public class FilmsLibrary {
 
         while (true) {
             System.out.println("\nВыберите функцию:");
-            System.out.println("1. Поиск");
+            System.out.println("1. Поиск фильмов");
             System.out.println("2. Добавить фильм");
             System.out.println("3. Обновить фильм");
             System.out.println("4. Удалить фильм");

@@ -19,10 +19,7 @@ public class Genre {
 
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "films_genres",
-            joinColumns = @JoinColumn(name = "genre_id"),
-            inverseJoinColumns = @JoinColumn(name = "film_id"))
+    @ManyToMany(mappedBy = "genres")
     private Set<Film> genreInFilms = new HashSet<>();
 
     @Override

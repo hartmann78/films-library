@@ -1,34 +1,15 @@
 package inputInformation;
 
-import databaseService.GenreService;
+import dao.GenreDao;
 import entity.Genre;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 
 public class GenreInput {
     private final Scanner scanner = new Scanner(System.in);
-    private final GenreService genreService = new GenreService();
-
-    public String input() {
-        int limit = 64;
-        while (true) {
-            try {
-                System.out.println("Введите название жанра:");
-                String directorName = scanner.nextLine();
-
-                if (directorName.length() > limit) {
-                    throw new Exception();
-                }
-
-                return directorName;
-            } catch (Exception e) {
-                System.out.println("Название жанра не должно превышать " + limit + " символов!");
-            }
-        }
-    }
+    private final GenreDao genreDao = new GenreDao();
 
     public Set<Genre> addGenreToMovie() {
         Set<Genre> genres = new HashSet<>();
@@ -50,13 +31,13 @@ public class GenreInput {
                     throw new Exception();
                 }
 
-                Optional<Genre> genre = genreService.findGenreByName(genreName);
+                Genre genre = genreDao.findByName(genreName);
 
-                if (genre.isPresent()) {
-                    genres.add(genre.get());
+                if (genre!=null) {
+                    genres.add(genre);
                 } else {
                     Genre newGenre = new Genre(null, genreName, new HashSet<>());
-                    genreService.addGenre(newGenre);
+                    genreDao.add(newGenre);
                     genres.add(newGenre);
                 }
             } catch (Exception e) {

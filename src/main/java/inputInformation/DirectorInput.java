@@ -1,16 +1,15 @@
 package inputInformation;
 
-import databaseService.DirectorService;
+import dao.DirectorDao;
 import entity.Director;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 
 public class DirectorInput {
     private final Scanner scanner = new Scanner(System.in);
-    private final DirectorService directorService = new DirectorService();
+    private final DirectorDao directorDao = new DirectorDao();
 
     public String input() {
         int limit = 64;
@@ -50,13 +49,13 @@ public class DirectorInput {
                     throw new Exception();
                 }
 
-                Optional<Director> director = directorService.findDirectorByName(directorName);
+                Director director = directorDao.findByName(directorName);
 
-                if (director.isPresent()) {
-                    directors.add(director.get());
+                if (director != null) {
+                    directors.add(director);
                 } else {
                     Director newDirector = new Director(null, directorName, new HashSet<>());
-                    directorService.addDirector(newDirector);
+                    directorDao.add(newDirector);
                     directors.add(newDirector);
                 }
             } catch (Exception e) {
