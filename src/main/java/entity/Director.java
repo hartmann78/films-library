@@ -1,10 +1,7 @@
 package entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,10 +19,7 @@ public class Director {
 
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "films_directors",
-            joinColumns = @JoinColumn(name = "director_id"),
-            inverseJoinColumns = @JoinColumn(name = "film_id"))
+    @ManyToMany(mappedBy = "directors")
     private Set<Film> directorInFilms = new HashSet<>();
 
     @Override

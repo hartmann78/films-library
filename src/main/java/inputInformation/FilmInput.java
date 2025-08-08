@@ -43,43 +43,6 @@ public class FilmInput {
         }
     }
 
-    public String directorInput() {
-        int limit = 64;
-        while (true) {
-            try {
-                System.out.println("Введите имя режиссёра:");
-                String directorName = scanner.nextLine();
-
-                if (directorName.length() > limit) {
-                    throw new Exception();
-                }
-
-                return directorName;
-            } catch (Exception e) {
-                System.out.println("Имя режиссёра не должно превышать " + limit + " символов!");
-            }
-        }
-    }
-
-
-    public String actorInput() {
-        int limit = 64;
-        while (true) {
-            try {
-                System.out.println("Введите имя актёра:");
-                String actorName = scanner.nextLine();
-
-                if (actorName.length() > limit) {
-                    throw new Exception();
-                }
-
-                return actorName;
-            } catch (Exception e) {
-                System.out.println("Имя актёра не должно превышать " + limit + " символов!");
-            }
-        }
-    }
-
     public double ratingInput() {
         while (true) {
             try {
@@ -113,7 +76,7 @@ public class FilmInput {
             } catch (NumberFormatException e) {
                 System.out.println("Неправильно введёно количество!");
             } catch (Exception e) {
-                System.out.println("Количество должно быть не меньше 0");
+                System.out.println("Количество должно быть не меньше 0 и не больше 2 147 483 647");
             }
         }
     }

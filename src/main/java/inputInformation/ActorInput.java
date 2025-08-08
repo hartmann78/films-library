@@ -1,18 +1,35 @@
 package inputInformation;
 
-import dao.impl.ActorDaoImpl;
+import dao.ActorDao;
 import entity.Actor;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 
 public class ActorInput {
     private final Scanner scanner = new Scanner(System.in);
-    private final ActorDaoImpl actorDao = new ActorDaoImpl();
+    private final ActorDao actorDao = new ActorDao();
 
-    public Set<Actor> input() {
+    public String input() {
+        int limit = 64;
+        while (true) {
+            try {
+                System.out.println("Введите имя актёра:");
+                String actorName = scanner.nextLine();
+
+                if (actorName.length() > limit) {
+                    throw new Exception();
+                }
+
+                return actorName;
+            } catch (Exception e) {
+                System.out.println("Имя актёра не должно превышать " + limit + " символов!");
+            }
+        }
+    }
+
+    public Set<Actor> addActorToMovie() {
         Set<Actor> actors = new HashSet<>();
         int limit = 64;
         while (true) {
@@ -32,34 +49,18 @@ public class ActorInput {
                     throw new Exception();
                 }
 
-                Optional<Actor> actor = getActor(actorName);
+                Actor actor = actorDao.findByName(actorName);
 
-                if (actor.isPresent()) {
-                    actors.add(actor.get());
+                if (actor != null) {
+                    actors.add(actor);
                 } else {
                     Actor newActor = new Actor(null, actorName, new HashSet<>());
-                    addActor(newActor);
+                    actorDao.add(newActor);
                     actors.add(newActor);
                 }
             } catch (Exception e) {
                 System.out.println("Имя режиссёра не должно превышать " + limit + " символов!");
             }
         }
-    }
-
-    public Optional<Actor> getActor(String name) {
-        return actorDao.findByName(name);
-    }
-
-    public void addActor(Actor actor) {
-        actorDao.add(actor);
-    }
-
-    public void updateActor(Actor actor) {
-        actorDao.update(actor);
-    }
-
-    public void deleteActor(Actor actor) {
-        actorDao.delete(actor);
     }
 }

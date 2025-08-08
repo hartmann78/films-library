@@ -1,18 +1,56 @@
 package dao;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+
 import java.util.List;
-import java.util.Optional;
 
-public interface EntityDao<T> {
-    List<T> findAll();
+public abstract class EntityDao<T> implements AutoCloseable {
+    private static final EntityManagerFactory factory = Persistence.createEntityManagerFactory("main");
+    protected EntityManager em = factory.createEntityManager();
 
-    Optional<T> findById(Integer id);
+    public abstract List<T> findAll();
 
-    Optional<T> findByName(String name);
+    public abstract T findById(Integer id);
 
-    void add(T t);
+    public void add(T entity) {
+        try {
+            em.getTransaction().begin();
+            em.persist(entity);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            e.printStackTrace();
+        }
+    }
 
-    void update(T t);
+    public void update(T entity) {
+        try {
+            em.getTransaction().begin();
+            em.merge(entity);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            e.printStackTrace();
+        }
+    }
 
-    void delete(T t);
+    public void delete(T entity) {
+        try {
+            em.getTransaction().begin();
+            em.remove(entity);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void close() {
+        if (em.isOpen()) {
+            em.close();
+        }
+    }
 }

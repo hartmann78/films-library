@@ -1,18 +1,35 @@
 package inputInformation;
 
-import dao.impl.DirectorDaoImpl;
+import dao.DirectorDao;
 import entity.Director;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 
 public class DirectorInput {
     private final Scanner scanner = new Scanner(System.in);
-    private final DirectorDaoImpl directorDao = new DirectorDaoImpl();
+    private final DirectorDao directorDao = new DirectorDao();
 
-    public Set<Director> input() {
+    public String input() {
+        int limit = 64;
+        while (true) {
+            try {
+                System.out.println("Введите имя режиссёра:");
+                String directorName = scanner.nextLine();
+
+                if (directorName.length() > limit) {
+                    throw new Exception();
+                }
+
+                return directorName;
+            } catch (Exception e) {
+                System.out.println("Имя режиссёра не должно превышать " + limit + " символов!");
+            }
+        }
+    }
+
+    public Set<Director> addDirectorToMovie() {
         Set<Director> directors = new HashSet<>();
         int limit = 64;
         while (true) {
@@ -32,34 +49,18 @@ public class DirectorInput {
                     throw new Exception();
                 }
 
-                Optional<Director> director = getDirector(directorName);
+                Director director = directorDao.findByName(directorName);
 
-                if (director.isPresent()) {
-                    directors.add(director.get());
+                if (director != null) {
+                    directors.add(director);
                 } else {
                     Director newDirector = new Director(null, directorName, new HashSet<>());
-                    addDirector(newDirector);
+                    directorDao.add(newDirector);
                     directors.add(newDirector);
                 }
             } catch (Exception e) {
                 System.out.println("Имя актёра не должно превышать " + limit + " символов!");
             }
         }
-    }
-
-    public Optional<Director> getDirector(String name) {
-        return directorDao.findByName(name);
-    }
-
-    public void addDirector(Director director) {
-        directorDao.add(director);
-    }
-
-    public void updateActor(Director director) {
-        directorDao.update(director);
-    }
-
-    public void deleteDirector(Director director) {
-        directorDao.delete(director);
     }
 }
