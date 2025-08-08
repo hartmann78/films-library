@@ -29,7 +29,7 @@ public class DirectorDaoImpl implements EntityDao<Director> {
     @Override
     public Optional<Director> findByName(String name) {
         try {
-            TypedQuery<Director> query = em.createQuery("from Genre where name = :name", Director.class);
+            TypedQuery<Director> query = em.createQuery("from Director where name = :name", Director.class);
             query.setParameter("name", name);
             return Optional.of(query.getSingleResult());
         } catch (Exception e) {

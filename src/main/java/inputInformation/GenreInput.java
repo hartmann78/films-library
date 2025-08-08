@@ -1,6 +1,6 @@
 package inputInformation;
 
-import dao.impl.GenreDaoImpl;
+import databaseService.GenreService;
 import entity.Genre;
 
 import java.util.HashSet;
@@ -10,9 +10,27 @@ import java.util.Set;
 
 public class GenreInput {
     private final Scanner scanner = new Scanner(System.in);
-    private final GenreDaoImpl genreDao = new GenreDaoImpl();
+    private final GenreService genreService = new GenreService();
 
-    public Set<Genre> input() {
+    public String input() {
+        int limit = 64;
+        while (true) {
+            try {
+                System.out.println("Введите название жанра:");
+                String directorName = scanner.nextLine();
+
+                if (directorName.length() > limit) {
+                    throw new Exception();
+                }
+
+                return directorName;
+            } catch (Exception e) {
+                System.out.println("Название жанра не должно превышать " + limit + " символов!");
+            }
+        }
+    }
+
+    public Set<Genre> addGenreToMovie() {
         Set<Genre> genres = new HashSet<>();
         int limit = 64;
         while (true) {
@@ -32,34 +50,18 @@ public class GenreInput {
                     throw new Exception();
                 }
 
-                Optional<Genre> genre = getGenre(genreName);
+                Optional<Genre> genre = genreService.findGenreByName(genreName);
 
                 if (genre.isPresent()) {
                     genres.add(genre.get());
                 } else {
                     Genre newGenre = new Genre(null, genreName, new HashSet<>());
-                    addGenre(newGenre);
+                    genreService.addGenre(newGenre);
                     genres.add(newGenre);
                 }
             } catch (Exception e) {
                 System.out.println("Название жанра не должно превышать " + limit + " символов!");
             }
         }
-    }
-
-    public Optional<Genre> getGenre(String name) {
-        return genreDao.findByName(name);
-    }
-
-    public void addGenre(Genre genre) {
-        genreDao.add(genre);
-    }
-
-    public void updateGenre(Genre genre) {
-        genreDao.update(genre);
-    }
-
-    public void deleteGenre(Genre genre) {
-        genreDao.delete(genre);
     }
 }
