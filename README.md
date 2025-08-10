@@ -6,7 +6,7 @@ Films Library (Картотека Фильмов). Demo ver.
 
 Информация о фильмах хранятся в реляционной системе управления базами данных PostgreSQL.
 
-[Ссылка на скачивание](https://github.com/hartmann78/films-library-final/archive/refs/heads/main.zip)
+[Ссылка на скачивание](https://github.com/hartmann78/films-library/archive/refs/heads/main.zip)
 
 
 ## Содержание
